@@ -3,7 +3,7 @@ const router = new Router()
 const reviewController = require('../controller/reviewController')
 
 router.post('/',reviewController.create)
+router.delete('/',reviewController.delete)
 router.get('/',reviewController.getAll)
-router.get('/:id',reviewController.getAllForOne)
 
 module.exports = router
