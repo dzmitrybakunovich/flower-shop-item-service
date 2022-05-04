@@ -15,7 +15,7 @@ class ReviewController {
             })
             return res.json(type)
         } catch (e) {
-            next(ApiError.badRequest(e.errors[0].message))
+            next(ApiError.badRequest(e))
         }
     }
 
@@ -26,7 +26,7 @@ class ReviewController {
             const answer = await Review.destroy({where: {re_id: id}})
             return res.json(answer)
         } catch (e) {
-            next(ApiError.badRequest(e.errors[0].message))
+            next(ApiError.badRequest(e))
         }
     }
 

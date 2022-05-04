@@ -9,7 +9,7 @@ class CategoryController {
             const category = await Category.create({ca_name: name})
             return res.json(category)
         } catch (e) {
-            next(ApiError.badRequest(e.errors[0].message))
+            next(ApiError.badRequest(e))
         }
 
     }
@@ -20,7 +20,7 @@ class CategoryController {
             const answer = await Category.destroy({where: {ca_id: id}})
             return res.json(answer)
         } catch (e) {
-            next(ApiError.badRequest(e.errors[0].message))
+            next(ApiError.badRequest(e))
         }
     }
 
@@ -30,7 +30,7 @@ class CategoryController {
             const answer = await Category.update({ca_name: name}, {where: {ca_id: id}})
             return res.json(answer)
         } catch (e) {
-            next(ApiError.badRequest(e.errors[0].message))
+            next(ApiError.badRequest(e))
         }
         return res.json()
     }

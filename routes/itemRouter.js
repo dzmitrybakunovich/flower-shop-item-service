@@ -10,7 +10,7 @@ const cloudinaryConfig = cloudinary.cloudinaryConfig
 router.post('/', cloudinaryConfig, itemController.create)
 router.delete('/', itemController.delete)
 router.put('/', cloudinaryConfig, itemController.update)
-router.get('/', itemController.getAll)
 router.get('/:id',itemController.getOne);
+router.get('/', itemController.getAll);
 
 module.exports = router

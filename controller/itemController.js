@@ -10,7 +10,7 @@ const datauri = multer.datauri
 class ItemController {
 
     static async saveImg(req) {
-        try{
+        try {
             let img_url;
             if (req.file) {
                 const file = datauri(req)
@@ -21,8 +21,8 @@ class ItemController {
                     });
             }
             return img_url
-        }catch (e){
-            ApiError.badRequest(e.errors[0].message)
+        } catch (e) {
+            ApiError.badRequest(e)
         }
 
     }
@@ -45,12 +45,12 @@ class ItemController {
                 it_img: img_url,
                 it_owner: owner,
                 categoryCaId: category,
-                it_description:description,
+                it_description: description,
                 // it_date_add: '2022-05-02 11:04:29.720 +00:00'
             })
             return res.json(item)
         } catch (e) {
-            next(ApiError.badRequest(e.errors[0].message))
+            next(ApiError.badRequest(e))
         }
 
     }
@@ -68,7 +68,7 @@ class ItemController {
             const answer = await Item.destroy({where: {it_id: id}})
             return res.json(answer)
         } catch (e) {
-            next(ApiError.badRequest(e.errors[0].message))
+            next(ApiError.badRequest(e))
         }
     }
 
@@ -104,34 +104,72 @@ class ItemController {
             }, {where: {it_id: id}})
             return res.json(item)
         } catch (e) {
-            next(ApiError.badRequest(e.errors[0].message))
+            next(ApiError.badRequest(e))
         }
     }
 
-    async getAll(req, res) {
-        let {itemId, categoryId, limit, page} = req.query
-        page = page || 1
-        limit = limit || 10
-        let offset = (page - 1) * limit
-
-        let items;
-        if (!itemId && !categoryId) {
-            items = await Item.findAll({limit, offset})
-        } else if (!itemId && categoryId) {
-            items = await Item.findAll({where: {categoryCaId: categoryId}, limit, offset})
-        } else if (itemId && !categoryId) {
-            items = await Item.findAll({where: {it_id: itemId}, limit, offset})
-        } else if (itemId && categoryId) {
-            items = await Item.findAll({where: {it_id: itemId, categoryCaId: categoryId}, limit, offset})
+    static parseOrder(order) {
+        try {
+            let answer = ['it_date_add','ASC']
+            if (order) {
+                order = order.split(/:/)
+                if (order.length !== 2) {
+                    return answer
+                }
+                if (order[0] === 'price') {
+                    answer[0] = 'it_price'
+                }
+                if (order[1] === 'desc') {
+                    answer[1] = 'DESC'
+                    console.log(order)
+                }
+            }
+            return answer
+        } catch (e) {
+            ApiError.badRequest(e)
         }
-        return res.json(items)
+
+    }
+
+    async getAll(req, res, next) {
+        try {
+            let {category, limit, page, order} = req.query
+
+            order = ItemController.parseOrder(order)
+            page = parseInt(page) > 0 || 1
+            limit = parseInt(limit) > 0 || 10
+            let offset = (page - 1) * limit
+            let items;
+            if (category) {
+                category = await Category.findOne({where: {ca_name: category}})
+                category = category.getDataValue('ca_id')
+                items = await Item.findAll({where: {categoryCaId: category}, limit, offset, order: [order]})
+            } else {
+                items = await Item.findAll({limit, offset, order: [order]})
+            }
+            // if (!itemId && !categoryId) {
+            //     items = await Item.findAll({limit, offset})
+            // } else if (!itemId && categoryId) {
+            //     items = await Item.findAll({where: {categoryCaId: categoryId}, limit, offset})
+            // } else if (itemId && !categoryId) {
+            //     items = await Item.findAll({where: {it_id: itemId}, limit, offset})
+            // } else if (itemId && categoryId) {
+            //     items = await Item.findAll({where: {it_id: itemId, categoryCaId: categoryId}, limit, offset})
+            // }
+            return res.json(items)
+        } catch (e) {
+            next(ApiError.badRequest(e))
+        }
+
     }
 
     async getOne(req, res) {
         const {id} = req.params
-        const item = Item.findOne({where: id})
+        const item = await Item.findAll({where: {it_id: id}})
         return res.json(item)
     }
+
+
 }
 
 module.exports = new ItemController()
