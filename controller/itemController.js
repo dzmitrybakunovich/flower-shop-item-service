@@ -1,6 +1,7 @@
 const {Item, Category} = require('../models/models')
 const cloudinary = require('../cloudinary/cloudinaryConfig')
 const multer = require('../cloudinary/multerConfig')
+const ApiError = require('../error/apiError')
 
 const uploader = cloudinary.uploader
 const datauri = multer.datauri
@@ -9,19 +10,24 @@ const datauri = multer.datauri
 class ItemController {
 
     static async saveImg(req) {
-        let img_url;
-        if (req.file) {
-            const file = datauri(req)
-            await uploader.upload(file.content,
-                {dpr: "auto", responsive: true, width: "auto", crop: "scale"},
-                (error, result) => {
-                    img_url = result.secure_url.toString()
-                });
+        try{
+            let img_url;
+            if (req.file) {
+                const file = datauri(req)
+                await uploader.upload(file.content,
+                    {dpr: "auto", responsive: true, width: "auto", crop: "scale"},
+                    (error, result) => {
+                        img_url = result.secure_url.toString()
+                    });
+            }
+            return img_url
+        }catch (e){
+            ApiError.badRequest(e.errors[0].message)
         }
-        return img_url
+
     }
 
-    async create(req, res) {
+    async create(req, res, next) {
         try {
             let {name, price, owner, category, description} = req.body
 
@@ -44,13 +50,13 @@ class ItemController {
             })
             return res.json(item)
         } catch (e) {
-            console.log(e)
+            next(ApiError.badRequest(e.errors[0].message))
         }
 
     }
 
 
-    async delete(req, res) {
+    async delete(req, res, next) {
         try {
             const {id} = req.body
             let img_path = (await Item.findOne({where: {it_id: id}})).getDataValue('it_img')
@@ -62,12 +68,12 @@ class ItemController {
             const answer = await Item.destroy({where: {it_id: id}})
             return res.json(answer)
         } catch (e) {
-            console.log(e)
+            next(ApiError.badRequest(e.errors[0].message))
         }
     }
 
 
-    async update(req, res) {
+    async update(req, res, next) {
         try {
             let {id, name, price, owner, category, description} = req.body
 
@@ -98,7 +104,7 @@ class ItemController {
             }, {where: {it_id: id}})
             return res.json(item)
         } catch (e) {
-            console.log(e)
+            next(ApiError.badRequest(e.errors[0].message))
         }
     }
 

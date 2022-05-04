@@ -4,9 +4,9 @@ const bodyParser = require('body-parser');
 const multerUpload = require('./cloudinary/multerConfig').multerUpload;
 
 const sequelize = require('./db')
-const models = require('./models/models')
 const cors = require('cors')
 const router = require('./routes/index')
+const err = require('./error/errorHandlingMiddleware')
 
 const port = process.env.PORT
 const host = process.env.HOST
@@ -21,6 +21,10 @@ app.use(multerUpload.single('img'));
 app.use(bodyParser.urlencoded({extended: true}));
 app.use(bodyParser.json());
 app.use('/api', router);
+
+//the last
+app.use(err)
+//
 
 app.get('/', (req, res) => {
     res.status(200).json({message: "WORKING"})
