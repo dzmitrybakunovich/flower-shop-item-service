@@ -1,8 +1,9 @@
 const {Review} = require('../models/models');
+const ApiError = require('../error/apiError')
 
 class ReviewController {
 
-    async create(req, res) {
+    async create(req, res, next) {
         try {
             const {content, mark, item_id, writer_id} = req.body
             // const {owner} = (await Item.findOne({where: {it_id: item_id}})).getDataValue('it_owner')
@@ -14,18 +15,18 @@ class ReviewController {
             })
             return res.json(type)
         } catch (e) {
-            console.log(e)
+            next(ApiError.badRequest(e))
         }
     }
 
 
-    async delete(req, res) {
+    async delete(req, res, next) {
         try {
             const {id} = req.body
             const answer = await Review.destroy({where: {re_id: id}})
             return res.json(answer)
         } catch (e) {
-            console.log(e)
+            next(ApiError.badRequest(e))
         }
     }
 

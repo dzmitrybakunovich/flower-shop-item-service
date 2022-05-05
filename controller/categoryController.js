@@ -1,35 +1,36 @@
 const {Category} = require('../models/models');
+const ApiError = require('../error/apiError')
 
 class CategoryController {
 
-    async create(req, res) {
+    async create(req, res, next) {
         try {
             const {name} = req.body
             const category = await Category.create({ca_name: name})
             return res.json(category)
         } catch (e) {
-            console.log(e)
+            next(ApiError.badRequest(e))
         }
 
     }
 
-    async delete(req, res) {
+    async delete(req, res, next) {
         try {
             const {id} = req.body
             const answer = await Category.destroy({where: {ca_id: id}})
             return res.json(answer)
         } catch (e) {
-            console.log(e)
+            next(ApiError.badRequest(e))
         }
     }
 
-    async update(req, res) {
+    async update(req, res, next) {
         try {
             const {id, name} = req.body
             const answer = await Category.update({ca_name: name}, {where: {ca_id: id}})
             return res.json(answer)
         } catch (e) {
-            console.log(e)
+            next(ApiError.badRequest(e))
         }
         return res.json()
     }
