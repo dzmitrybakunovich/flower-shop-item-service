@@ -8,8 +8,8 @@ const models = require('./models/models')
 const cors = require('cors')
 const router = require('./routes/index')
 
-const port = process.env.PORT
-const host = process.env.HOST
+const port = 8080
+const host = '0.0.0.0'
 
 
 const app = express();
