@@ -1,3 +1,4 @@
+const fs = require('fs')
 const sequelize = require('../db')
 const {DataTypes} = require('sequelize')
 
@@ -38,6 +39,12 @@ Item.belongsTo(Category)
 
 Item.hasMany(Review)
 Review.belongsTo(Item, {onDelete: 'CASCADE'})
+
+let obj = JSON.parse(fs.readFileSync(process.env.DATA_PATH, 'utf8'));
+for (let i = 0; i < obj.length; i++) {
+    console.log(obj[i]['ca_name']);
+    Category.create({ca_name: obj[i]['ca_name']}).then(r => console.log(obj[i]['ca_name']))
+}
 
 module.exports =
     {
