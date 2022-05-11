@@ -75,7 +75,7 @@ class ItemController {
 
     async update(req, res, next) {
         try {
-            let {id, name, price, owner, category, description} = req.body
+            let {id, name, price, owner, category, description, fav_user} = req.body
 
             category = await Category.findOne({where: {ca_name: category}})
             if (category) {
@@ -100,6 +100,7 @@ class ItemController {
                 it_owner: owner,
                 categoryCaId: category,
                 it_description: description,
+                it_fav_user: fav_user
                 // it_date_add: DATE.curr
             }, {where: {it_id: id}})
             return res.json(item)
@@ -169,6 +170,11 @@ class ItemController {
         return res.json(item)
     }
 
+    async getFav(req, res) {
+        const {id} = req.query()
+        const item = await Item.findAll({where: {it_fav_user: id}})
+        return res.json(item)
+    }
 
 }
 

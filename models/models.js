@@ -1,4 +1,4 @@
-const fs = require('fs')
+// const fs = require('fs')
 const sequelize = require('../db')
 const {DataTypes} = require('sequelize')
 
@@ -7,6 +7,7 @@ const Item = sequelize.define('item', {
     it_name: {type: DataTypes.STRING, allowNull: false},
     it_description: {type: DataTypes.STRING(512)},
     it_price: {type: DataTypes.INTEGER, allowNull: false},
+    it_fav_user:{type: DataTypes.INTEGER},
     it_img: {type: DataTypes.STRING},
     it_date_add: {
         type: DataTypes.DATE, defaultValue: DataTypes.NOW,
@@ -21,9 +22,10 @@ const Category = sequelize.define('category', {
 
 const Review = sequelize.define('review', {
     re_id: {type: DataTypes.INTEGER, primaryKey: true, autoIncrement: true},
-    re_content: {type: DataTypes.STRING(512)},
-    re_mark: {type: DataTypes.INTEGER, default_value: 0.0, validate: {min: 0.0, max: 5}},
-    re_writer: {type: DataTypes.INTEGER},
+    // re_content: {type: DataTypes.STRING(512)},
+    re_id_owner: {type: DataTypes.INTEGER, allowNull: false},
+    re_id_item: {type: DataTypes.INTEGER, allowNull: false},
+    // re_writer: {type: DataTypes.INTEGER},
     re_date: {type: DataTypes.DATE, defaultValue: DataTypes.NOW}
 })
 
@@ -40,11 +42,11 @@ Item.belongsTo(Category)
 Item.hasMany(Review)
 Review.belongsTo(Item, {onDelete: 'CASCADE'})
 
-let obj = JSON.parse(fs.readFileSync(process.env.DATA_PATH, 'utf8'));
-for (let i = 0; i < obj.length; i++) {
-    console.log(obj[i]['ca_name']);
-    Category.create({ca_name: obj[i]['ca_name']}).then(r => console.log(obj[i]['ca_name']))
-}
+// let obj = JSON.parse(fs.readFileSync(process.env.DATA_PATH, 'utf8'));
+// for (let i = 0; i < obj.length; i++) {
+//     console.log(obj[i]['ca_name']);
+//     Category.create({ca_name: obj[i]['ca_name']}).then(r => console.log(obj[i]['ca_name']))
+// }
 
 module.exports =
     {

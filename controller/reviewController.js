@@ -5,13 +5,11 @@ class ReviewController {
 
     async create(req, res, next) {
         try {
-            const {content, mark, item_id, writer_id} = req.body
+            const {item_id, user_id} = req.body
             // const {owner} = (await Item.findOne({where: {it_id: item_id}})).getDataValue('it_owner')
             const type = await Review.create({
-                re_content: content,
-                re_mark: mark,
-                re_writer: writer_id,
-                itemItId: item_id,
+                re_id_item: item_id,
+                re_id_owner: user_id,
             })
             return res.json(type)
         } catch (e) {

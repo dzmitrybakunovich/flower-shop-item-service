@@ -12,5 +12,6 @@ router.delete('/', itemController.delete)
 router.put('/', cloudinaryConfig, itemController.update)
 router.get('/:id',itemController.getOne);
 router.get('/', itemController.getAll);
+router.get('/fav/', itemController.getFav);
 
 module.exports = router
